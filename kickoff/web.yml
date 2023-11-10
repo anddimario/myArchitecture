@@ -1,0 +1,50 @@
+---
+- name: Configure webserver
+  hosts: webservers
+  # become: true
+  tasks:
+
+    - name: Check if docker-ce is installed
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.packages['docker-ce'] | length }} versions of docker-ce are installed!"
+      when: "'docker-ce' in ansible_facts.packages"
+
+    - name: Create fluent bit config
+      ansible.builtin.template:
+        src: configs/fluent-bit.conf.j2
+        dest: ~/fluent-bit.conf
+        mode: '0644'
+
+    - name: Copy traefik config
+      ansible.builtin.copy:
+        src: ./configs/traefik.yml
+        dest: ~/traefik.yml
+        mode: '0644'
+
+    - name: Copy docker compose file with global services
+      ansible.builtin.copy:
+        src: ./docker-compose.global.yml
+        dest: ~/docker-compose.global.yml
+        mode: '0644'
+
+    - name: Startup global docker container
+      ansible.builtin.command:
+        cmd: sudo docker compose --project-name=global --file docker-compose.global.yml up --detach
+        chdir: ~
+      register: startup_output # <- Registers the command output.
+      changed_when: startup_output.rc != 0 # <- Uses the return code to define when the task has changed.
+
+    - name: Startup container output
+      ansible.builtin.debug:
+        var: startup_output
+
+    - name: Copy docker compose file app
+      ansible.builtin.copy:
+        src: ./docker-compose.yml
+        dest: ~/docker-compose.yml
+        mode: '0644'
+    - name: Copy deploy script
+      ansible.builtin.copy:
+        src: ./blue-green-deploy.sh
+        dest: ~/blue-green-deploy.sh
+        mode: '0644'

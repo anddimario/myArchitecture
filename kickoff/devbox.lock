@@ -1,0 +1,105 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "act@latest": {
+      "last_modified": "2023-10-02T08:16:30Z",
+      "resolved": "github:NixOS/nixpkgs/f902cb49892d300ff15cb237e48aa1cad79d68c3#act",
+      "source": "devbox-search",
+      "version": "0.2.52",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/zcy10dqbw8za1bmb6bv2hlrbsf7b3blw-act-0.2.52"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/8xd3vck8wi2bxqrnrgy9aa7d8shlqrxj-act-0.2.52"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/54d0ny6h2yip6bcii8gnpc2g08ncg1bg-act-0.2.52"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/29gnzqzql6pap4l12yng61f2khapsf8g-act-0.2.52"
+        }
+      }
+    },
+    "ansible-lint@latest": {
+      "last_modified": "2023-10-15T14:24:03Z",
+      "resolved": "github:NixOS/nixpkgs/12bdeb01ff9e2d3917e6a44037ed7df6e6c3df9d#ansible-lint",
+      "source": "devbox-search",
+      "version": "6.20.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/sqx01jwjmhlj56znr7ssjlkmhrz320ws-ansible-lint-6.20.0"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/qbmpgb131k8113wiw5qlz3n913sk5ja5-ansible-lint-6.20.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/brvczzhfksp66xmczlc84d24xs4mfma5-ansible-lint-6.20.0"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/4v9w985gdmpwlmzvjrkqr05r330mjv9w-ansible-lint-6.20.0"
+        }
+      }
+    },
+    "ansible@latest": {
+      "last_modified": "2023-10-15T14:24:03Z",
+      "resolved": "github:NixOS/nixpkgs/12bdeb01ff9e2d3917e6a44037ed7df6e6c3df9d#ansible",
+      "source": "devbox-search",
+      "version": "2.15.5",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/0314d7vg89q1nsr7d6hv3zb82qgnmxka-python3.10-ansible-core-2.15.5"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/6ygzqsz4iwp80g2qwp04r1vdfksnz59m-python3.10-ansible-core-2.15.5"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/sv2bj5xnsjvi96kwa6w6d5n1p1p6zgbp-python3.10-ansible-core-2.15.5"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/mydv2qp17kajwfw8rxjzvg29pfhlnb27-python3.10-ansible-core-2.15.5"
+        }
+      }
+    },
+    "trivy@latest": {
+      "last_modified": "2023-10-15T14:24:03Z",
+      "resolved": "github:NixOS/nixpkgs/12bdeb01ff9e2d3917e6a44037ed7df6e6c3df9d#trivy",
+      "source": "devbox-search",
+      "version": "0.46.0",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/aqcl6jrwi4mq6h2w6w8sai7prfvvlp3n-trivy-0.46.0"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/p8dpbd755a18vfcjbgxzkdydb2khrr5k-trivy-0.46.0"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/fj1sgmqyqkq1nvw028a7fzpv99gnh41i-trivy-0.46.0"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/4cqr7s48viv13a6qf0v0x78q1yx6mmhc-trivy-0.46.0"
+        }
+      }
+    },
+    "vagrant@latest": {
+      "last_modified": "2023-10-15T14:24:03Z",
+      "resolved": "github:NixOS/nixpkgs/12bdeb01ff9e2d3917e6a44037ed7df6e6c3df9d#vagrant",
+      "source": "devbox-search",
+      "version": "2.3.4",
+      "systems": {
+        "aarch64-darwin": {
+          "store_path": "/nix/store/xfn6v96jvpwipp99l4mqmmskqlfiip6d-vagrant-2.3.4"
+        },
+        "aarch64-linux": {
+          "store_path": "/nix/store/y9chisgkknl20rryk84hwg4l5ii73ifw-vagrant-2.3.4"
+        },
+        "x86_64-darwin": {
+          "store_path": "/nix/store/fxld15c6fxyj8g0fn5vms2072xi0nds8-vagrant-2.3.4"
+        },
+        "x86_64-linux": {
+          "store_path": "/nix/store/2ax4pn8dmrlkdzr59k6chr08idpaw1ys-vagrant-2.3.4"
+        }
+      }
+    }
+  }
+}

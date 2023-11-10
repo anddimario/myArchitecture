@@ -1,0 +1,26 @@
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  machine = [
+    { name: "web1", ip: "192.168.56.10" },
+    { name: "web2", ip: "192.168.56.11" },
+    { name: "monitor", ip: "192.168.56.12" },
+    { name: "db1", ip: "192.168.56.13" },
+    # { name: "registry", ip: "192.168.56.14" }
+  ]
+
+  machine.each do |node|
+    config.vm.define node[:name] do |n|
+      n.vm.box = config.vm.box
+
+      n.vm.provision "shell", inline: <<-SHELL
+        sudo sed -i 's/^\\s*PasswordAuthentication\\s\\+no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+        sudo systemctl restart sshd.service
+      SHELL
+
+      n.vm.network "private_network", ip: node[:ip]
+      n.vm.hostname = node[:name]
+    end
+  end
+
+end

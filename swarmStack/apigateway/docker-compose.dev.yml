@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    image: apigateway:dev
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: mystack-apigateway
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+    # depends_on:
+    #   - db  
+
+#   apigateway-db:
+#     image: postgres:15
+#     restart: always
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_DB=mydb
+#       - POSTGRES_PASSWORD=postgres
+#     ports:
+#       - '127.0.0.1:5432:5432'
+#     volumes: 
+#       - apigateway-db:/var/lib/postgresql/data
+
+# volumes:
+#   apigateway-db:
+#     driver: local
+#   node_modules:

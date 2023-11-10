@@ -1,0 +1,74 @@
+---
+- name: Configure Postgres
+  hosts: dbs
+  tasks:
+    - name: Install docker dependencies
+      ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: true
+      loop:
+        - postgresql
+        - acl # required for privilage escalation
+        - python3-psycopg2 # required for postgres
+      become: true
+    - name: Enable and Start Postgres Service
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+      become: true
+
+    - name: Create the database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: "{{ db_name }}"
+        owner: "{{ db_user }}"
+        state: present
+    - name: Create the user
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        encrypted: true
+        state: present
+    - name: Grant privileges
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_privs:
+        type: database
+        db: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        privs: ALL
+        grant_option: false
+        state: present
+    - name: "Allow md5 connection for the db user"
+      community.postgresql.postgresql_pg_hba:
+        dest: "/etc/postgresql/14/main/pg_hba.conf"
+        contype: host
+        address: all
+        databases: "{{ db_name }}"
+        method: md5
+        users: "{{ db_user }}"
+        create: true
+      become: true
+      become_user: postgres
+      notify: Restart postgres
+
+    - name: Change bind address
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: listen_addresses
+        value: "{{ listen_address }}"
+      register: set
+      notify: Restart postgres
+
+  handlers:
+    - name: Restart postgres
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted
+      become: true

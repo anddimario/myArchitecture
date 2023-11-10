@@ -1,0 +1,118 @@
+---
+- name: Build and create tar
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+
+    - name: Build
+      community.docker.docker_image:
+        name: "{{ app_name }}"
+        build:
+          path: ./
+        source: build
+        state: present
+        tag: "{{ image_tag }}"
+      delegate_to: localhost
+
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    # - name: Print the package facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts.packages
+
+    - name: Check if trivy is installed
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.packages['trivy'] | length }} versions of trivy are installed!"
+      when: "'trivy' in ansible_facts.packages"
+
+    - name: Scan image
+      ansible.builtin.command:
+        cmd: "trivy image -s HIGH,CRITICAL {{ app_name }}:{{ image_tag }}"
+      register: scan_output # <- Registers the command output.
+      changed_when: scan_output.rc != 0 # <- Uses the return code to define when the task has changed.
+
+    - name: Scan output
+      ansible.builtin.debug:
+        var: scan_output
+
+    - name: Archive container image as a tarball
+      community.docker.docker_image:
+        name: "{{ app_name }}:{{ image_tag }}"
+        archive_path: "/tmp/{{ app_name }}_{{ image_tag }}.tar"
+        source: pull
+        state: present
+      delegate_to: localhost
+
+- name: Deploy
+  hosts: webservers
+  gather_facts: false
+  vars:
+    complete_image_path: "/tmp/{{ app_name }}_{{ image_tag }}.tar"
+  tasks:
+    # - name: Debug vars
+    #   ansible.builtin.debug:
+    #     msg: "image tag {{ image_tag }}, {{ app_name }}"
+    - name: Copy env file
+      ansible.builtin.copy:
+        dest: ~/app.env
+        src: "{{ app_env_file_path }}"
+        mode: '0644'
+      # become: true
+
+    - name: Copy image tar
+      ansible.builtin.copy:
+        src: "{{ complete_image_path }}"
+        dest: "{{ complete_image_path }}"
+        mode: '0644'
+
+    - name: Load container from tarball
+      community.docker.docker_image:
+        name: "{{ app_name }}"
+        tag: "{{ image_tag }}"
+        load_path: "{{ complete_image_path }}"
+        state: present
+        source: load
+      become: true
+
+    - name: Remove image tar
+      ansible.builtin.file:
+        path: "/tmp/{{ app_name }}_{{ image_tag }}.tar"
+        state: absent
+
+    - name: Blue/green deploy
+      ansible.builtin.command:
+        cmd: bash blue-green-deploy.sh
+        chdir: ~
+      environment:
+        APP_NAME: "{{ app_name }}"
+        APP_PORT: "{{ app_port }}"
+        TAG: "{{ image_tag }}"
+        API_DOMAIN: "{{ api_domain }}"
+        TRAEFIK_NETWORK: "{{ traefik_network }}"
+        HEALTH_ROUTE: "{{ health_route }}"
+      register: deploy_output # <- Registers the command output.
+      changed_when: deploy_output.rc != 0 # <- Uses the return code to define when the task has changed.
+      become: true
+
+    - name: Deploy output
+      ansible.builtin.debug:
+        var: deploy_output
+
+    - name: Clean older images based on number
+      ansible.builtin.command:
+        cmd: "docker images -q | grep kickoff | tail -n +{{ image_retention_number }} | awk '{print $2}' | xargs -I {} docker rmi kickoff:{}"
+      register: clean_image_output
+      changed_when: clean_image_output.rc != 0
+      become: true
+      when: image_retention_number is defined
+
+    - name: Clean older images based on date
+      ansible.builtin.command:
+        cmd: "docker image prune -f -a --filter 'until=2h'"
+      register: clean_image_output
+      changed_when: clean_image_output.rc != 0
+      become: true
+      when: image_retention_hours is defined

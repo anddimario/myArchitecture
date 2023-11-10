@@ -1,0 +1,9 @@
+openobserve-data
+.vagrant
+inventory.ini
+app
+my-app
+*.secrets
+buildAndPushWithRegistry.yml
+registry.yml
+env-example

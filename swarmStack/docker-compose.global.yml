@@ -1,0 +1,80 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # - "--entrypoints.web.address=:80"
+      # Enable Docker Swarm mode
+      - --providers.docker.swarmmode
+      # Enable the Dashboard and API
+      - --api
+      - --api.dashboard=true
+      - --api.insecure=true
+    networks:
+      - traefik-public
+    deploy:
+      placement: # Traefik must be on manager and not workers, otherwise doesn't work in swarm mode
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DASHBOARD_URL}`)"
+        - "traefik.http.routers.dashboard.service=api@internal"  
+        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+    ports:
+      - "80:80"
+      - "8080:8080" 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./traefik.yml:/traefik.yml
+    restart: unless-stopped
+
+  fluent-bit:
+    image: fluent/fluent-bit
+    ports:
+      - "127.0.0.1:24224:24224"
+      - "127.0.0.1:24224:24224/udp"
+    configs:
+      - source: fluentbit
+        target: /fluent-bit/etc/fluent-bit.conf
+    deploy:
+      replicas: 2
+    restart: unless-stopped
+
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    ports:
+      - "5080:5080"
+    environment:
+      - ZO_ROOT_USER_EMAIL=${ZO_ROOT_USER_EMAIL}
+      - ZO_ROOT_USER_PASSWORD=${ZO_ROOT_USER_PASSWORD}
+      - ZO_DATA_DIR=/data
+    volumes:
+      - openobserve-data:/data
+
+  kuma:
+    image: louislam/uptime-kuma:1
+    restart: always
+    ports:
+      - 3001:3001
+    volumes:
+      - uptime-kuma:/app/data
+
+volumes:
+  openobserve-data:
+  uptime-kuma:
+
+
+networks:
+  traefik-public:
+    external:
+      true
+
+configs:
+  fluentbit:
+    external:
+      true
