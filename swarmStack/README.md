@@ -33,14 +33,15 @@ TRAEFIK_DASHBOARD_URL="traefik.dash.com"
 While still on the host, create the cluster using the following commands
 
 ```bash
-export ANSIBLE_HOST_KEY_CHECKING=False 
-ansible-playbook -i inventory.ini create_cluster.yml
+ansible-playbook -i inventory.ini monitor.yml
+# Create the monitor first and then add the openobserve config for fluent bit
+ansible-playbook -i inventory.ini swarm.yml
 ```
 
 Deploy the apigateway using the following command. Retry the command in case the it fails.
 
 ```bash
-ansible-playbook -i ../inventory.ini --extra-vars '{"app_name":"...","image_tag":"...","num_replicas":"..."}' deploy.yml
+ansible-playbook -i ../inventory.ini --extra-vars '{"app_name":"...","image_tag":"...","num_replicas":"...","APP_URL":"..."}' app_deploy.yml
 ```
 
 Test that it works by running these commands on the host

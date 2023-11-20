@@ -10,6 +10,8 @@ ENV PYTHONUNBUFFERED=1
 # Install pip requirements
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
+RUN apt update \
+    && apt install -y curl
 
 WORKDIR /app
 COPY ./src .

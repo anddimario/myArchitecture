@@ -3,48 +3,48 @@
   hosts: monitor
   become: true
   tasks:
-    - name: Check if docker-ce is installed
-      ansible.builtin.debug:
-        msg: "{{ ansible_facts.packages['docker-ce'] | length }} versions of docker-ce are installed!"
-      when: "'docker-ce' in ansible_facts.packages"
+    #- name: Check if docker-ce is installed
+    #  ansible.builtin.debug:
+    #    msg: "{{ ansible_facts.packages['docker-ce'] | length }} versions of docker-ce are installed!"
+    #  when: "'docker-ce' in ansible_facts.packages"
       
-    # - name: Debug vars
-    #   ansible.builtin.debug:
-    #     msg: "{{ openobserve_password }}, Let’s learn Ansible variables"
+     - name: Debug vars
+       ansible.builtin.debug:
+         msg: "{{ openobserve_password }}, Let’s learn Ansible variables"
 
-    # - name: Download tar file
-    #   ansible.builtin.get_url:
-    #     url: https://github.com/openobserve/openobserve/releases/download/v0.6.4/openobserve-v0.6.4-linux-amd64.tar.gz
-    #     dest: /tmp
-    #     mode: '0644'
+     - name: Download tar file
+       ansible.builtin.get_url:
+         url: https://github.com/openobserve/openobserve/releases/download/v0.6.4/openobserve-v0.6.4-linux-amd64.tar.gz
+         dest: /tmp
+         mode: '0644'
 
-    # - name: Unarchive tar file
-    #   ansible.builtin.unarchive:
-    #     src: /tmp/openobserve-v0.6.4-linux-amd64.tar.gz
-    #     dest: /usr/local/bin
-    #     remote_src: true
+     - name: Unarchive tar file
+       ansible.builtin.unarchive:
+         src: /tmp/openobserve-v0.6.4-linux-amd64.tar.gz
+         dest: /usr/local/bin
+         remote_src: true
 
-    # - name: Create startup service
-    #   ansible.builtin.copy:
-    #     dest: /etc/systemd/system/openobserve.service
-    #     content: |
-    #       [Unit]
-    #       Description=Openobserve
+     - name: Create startup service
+       ansible.builtin.copy:
+         dest: /etc/systemd/system/openobserve.service
+         content: |
+           [Unit]
+           Description=Openobserve
 
-    #       [Service]
-    #       Environment=ZO_ROOT_USER_EMAIL="{{ openobserve_username }}"
-    #       Environment=ZO_ROOT_USER_PASSWORD="{{ openobserve_password | regex_escape() }}"
-    #       ExecStart=/usr/local/bin/openobserve
-    #       Restart=always
+           [Service]
+           Environment=ZO_ROOT_USER_EMAIL="{{ openobserve_username }}"
+           Environment=ZO_ROOT_USER_PASSWORD="{{ openobserve_password | regex_escape() }}"
+           ExecStart=/usr/local/bin/openobserve
+           Restart=always
 
-    #       [Install]
-    #       WantedBy=multi-user.target
-    #     mode: '0644'
-    #   # become: true
+           [Install]
+           WantedBy=multi-user.target
+         mode: '0644'
+       # become: true
 
-    # - name: Enable service
-    #   ansible.builtin.systemd:
-    #     name: openobserve
-    #     enabled: true
-    #     state: started
-    #   # become: true
+     - name: Enable service
+       ansible.builtin.systemd:
+         name: openobserve
+         enabled: true
+         state: started
+       # become: true
