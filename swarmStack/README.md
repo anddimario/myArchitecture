@@ -19,15 +19,29 @@ Create an `inventory.ini`, example:
 [worker]
 192.168.56.11
 
+[monitor]
+192.168.56.12
+
 [all:vars]
 ansible_connection=ssh
 ansible_user=vagrant
 ansible_password=vagrant
+image_registry_username=....
+image_registry_password=....
+image_repository=....
+TRAEFIK_DASHBOARD_URL=traefik.dash.com
+traefik_dashboard_user=....
+traefik_dashboard_password=....
+
+[monitor:vars]
+ZO_ROOT_USER_EMAIL=...
+ZO_ROOT_USER_PASSWORD=...
 
 [master:vars]
-ZO_ROOT_USER_EMAIL=
-ZO_ROOT_USER_PASSWORD=
-TRAEFIK_DASHBOARD_URL="traefik.dash.com"
+openobserve_fluentbit_username=...
+openobserve_fluentbit_password=...
+; openobserve_host=tasks.global_openobserve
+openobserve_host=192.168.56.12
 ```
 
 While still on the host, create the cluster using the following commands
